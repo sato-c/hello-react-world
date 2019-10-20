@@ -5,21 +5,32 @@ import './App.css';
 interface WelcomeProps {
   name: string;
 }
- 
-  function Welcome(props: WelcomeProps) {
-    return <h1>Hello, {props.name}</h1>;
+
+interface WelcomeState {
+  name: string;
+}
+
+class Welcome extends React.Component<WelcomeProps,WelcomeState> {
+  constructor(props: WelcomeProps) {
+    super(props);
+
+    this.state = {name: props.name ? props.name : 'everyOne', };
   }
-  
-  const App: React.FC = () => {
-    return (
-      <div className="App">
-        <Welcome name="Sara" />
-        <Welcome name="Cahal" />
-        <Welcome name="Edite" />
-        <Welcome name="Everyone" />
-      </div>
-    );
+
+  render() {
+    return <h1>Hello, {this.state.name}</h1>;
   }
-  
-  export default App;
-  
+}
+
+const App: React.FC = () => {
+  return (
+    <div className="App">
+      <Welcome name=""/>
+      <Welcome name="Cahal" />
+      <Welcome name="Edite" />
+      <Welcome name="Everyone" />
+    </div>
+  );
+}
+
+export default App;
