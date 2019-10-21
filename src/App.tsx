@@ -2,81 +2,99 @@ import React from 'react';
 // import logo from './logo.svg';
 import './App.css';
 
-interface GreetingProps {
-    isLoggedIn: boolean;
-}
-
-interface GreetingState {
-    isLoggedIn: boolean;
-}
-
-interface LoginGreeting {
+interface WelcomeProps {
+    name: string;
+    onClick: () => void;
+  }
+  
+  interface WelcomeState {
+    name: string;
+    onClick: () => void;
+  }
+  
+  class Welcome extends React.Component<WelcomeProps, WelcomeState> {
+    constructor(props: WelcomeProps) {
+      super(props);
+  
+      this.state = {
+          name: props.name ? props.name : 'everyOne',
+          onClick: props.onClick,
+        }
+    }
+  
+    render() {
+      return (
+        <p>
+        <button onClick={this.state.onClick}>
+          {this.state.name}
+          </button>
+        </p>
+      );
+    }
+  }
+  
+interface UserListProps {
     name: string;
 }
 
-function UserGreeting(props: LoginGreeting) {
-    return <h1>Welcome back! {props.name}</h1>
+interface UserListState {
+    name: string[];
+    pushed: string;
+    update: boolean;
 }
 
-function GuestGreeting(props: LoginGreeting) {
-    return <h1>Please sign up! {props.name}</h1>
-}
-
-class Greeting extends React.Component<GreetingProps,GreetingState> {
-    constructor(props: GreetingProps) {
-        super(props);
+class UserList extends React.Component<UserListProps, UserListState> {
+    constructor(props: UserListProps) {
+        super(props)
 
         this.state = {
-            isLoggedIn: props.isLoggedIn,
+            name: this.props.name.split(','),
+            pushed: '',
+            update: false,
         }
     }
 
-    handleClick = () => {
-        this.setState({
-            isLoggedIn: !this.state.isLoggedIn, 
-        })
+    handleClick(user_name: string) {
+        //e.preventDefault();
+  
+        if (this.state.pushed === user_name ) {
+            this.setState({
+                pushed: '',
+                update: false,
+            })
+        } else {
+            this.setState({
+                pushed: user_name,
+                update: true,
+            })
+        }
     }
 
     render() {
-        if ( this.state.isLoggedIn ) {
-            return <UserGreeting name="" />
-        } else {
-            return <GuestGreeting name="GuestUser" />
-        }
+        return (
+            <p>
+            {
+                this.state.name.map((user_name) => {
+                    if ( user_name === '' ) {
+                        return <Welcome name='everyOne' onClick={() => this.handleClick(user_name)} /> 
+                    } else {
+                        return <Welcome name={user_name} onClick={() => this.handleClick(user_name)} /> 
+                    }
+                })
+            }
+
+            <div>{this.state.update ? <div>Hello! {this.state.pushed}</div>:''}</div>
+            </p>
+        )
     }
-}
-
-interface WelcomeProps {
-  name: string;
-}
-
-interface WelcomeState {
-  name: string;
-}
-
-class Welcome extends React.Component<WelcomeProps,WelcomeState> {
-  constructor(props: WelcomeProps) {
-    super(props);
-
-    this.state = {name: props.name ? props.name : 'everyOne', };
-  }
-
-  render() {
-    return <h1>Hello, {this.state.name}</h1>;
-  }
 }
 
 const App: React.FC = () => {
-    return (
-        <div className="App">
-          <Welcome name=""/>
-          <Welcome name="Cahal" />
-          <Welcome name="Edite" />
-          <Welcome name="Everyone" />
-    
-            <Greeting isLoggedIn={false} />
-        </div>
-        )
-    }
+  return (
+    <div className="App">
+      <UserList name=",Cahal,Edite,Everyone" />
+    </div>
+  );
+}
 
 export default App;
