@@ -17,14 +17,14 @@ interface WelcomeProps {
       super(props);
   
       this.state = {
-          name: props.name ? props.name : 'everyOne',
+          name: props.name,
           onClick: props.onClick,
         }
     }
   
     render() {
       return (
-            <button onClick={this.state.onClick} name={this.state.name}>
+            <button onClick={this.state.onClick} >
           {this.state.name}
           </button>
       );
@@ -38,7 +38,7 @@ interface UserListProps {
 interface UserListState {
     name: string[];
     pushed: string;
-    update: boolean;
+//    update: boolean;
 }
 
 class UserList extends React.Component<UserListProps, UserListState> {
@@ -48,7 +48,7 @@ class UserList extends React.Component<UserListProps, UserListState> {
         this.state = {
             name: this.props.name.split(','),
             pushed: '',
-            update: false,
+//            update: false,
         }
     }
 
@@ -58,12 +58,12 @@ class UserList extends React.Component<UserListProps, UserListState> {
         if (this.state.pushed === user_name ) {
             this.setState({
                 pushed: '',
-                update: false,
+//                update: false,
             })
         } else {
             this.setState({
                 pushed: user_name,
-                update: true,
+//                update: true,
             })
         }
     }
@@ -80,7 +80,7 @@ class UserList extends React.Component<UserListProps, UserListState> {
                     }
                 })
             }
-            <h1>{this.state.update ? <div>Hello! {this.state.pushed}</div>:''}</h1>
+            <h1>{this.state.pushed ? <div>Hello! {this.state.pushed}</div>:''}</h1>
             </p>
         )
     }
