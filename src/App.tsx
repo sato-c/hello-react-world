@@ -3,12 +3,12 @@ import React from 'react';
 import './App.css';
 
 interface WelcomeProps {
-    name: string;
+    name: StringT;
     onClick: () => void;
   }
   
   interface WelcomeState {
-    name: string;
+    name: StringT;
     onClick: () => void;
   }
   
@@ -32,12 +32,12 @@ interface WelcomeProps {
   }
   
 interface UserListProps {
-    name: string;
+    name: StringT[];
 }
 
 interface UserListState {
-    name: string[];
-    pushed: string;
+    name: StringT[];
+    pushed: StringT;
 //    update: boolean;
 }
 
@@ -46,19 +46,17 @@ class UserList extends React.Component<UserListProps, UserListState> {
         super(props)
 
         this.state = {
-            name: this.props.name.split(','),
-            pushed: '',
-//            update: false,
+            name: this.props.name,
+            pushed: undefined,
         }
     }
 
-    handleClick(user_name: string) {
+    handleClick(user_name: StringT) {
         //e.preventDefault();
   
         if (this.state.pushed === user_name ) {
             this.setState({
-                pushed: '',
-//                update: false,
+                pushed: undefined,
             })
         } else {
             this.setState({
@@ -72,8 +70,8 @@ class UserList extends React.Component<UserListProps, UserListState> {
         return (
             <p>
             {
-                this.state.name.map((user_name) => {
-                    if ( user_name === '' ) {
+                this.state.name.map((user_name: StringT) => {
+                    if ( user_name === undefined || user_name === '') {
                         return <Welcome name='everyOne' onClick={() => this.handleClick('everyOne')} /> 
                     } else {
                         return <Welcome name={user_name} onClick={() => this.handleClick(user_name)} /> 
@@ -86,10 +84,14 @@ class UserList extends React.Component<UserListProps, UserListState> {
     }
 }
 
+type StringT = string | undefined;
+
+const users = ['','Cahal','Edite','Everyone']
+
 const App: React.FC = () => {
   return (
     <div className="App">
-      <UserList name=",Cahal,Edite,Everyone" />
+      <UserList name={users} />
     </div>
   );
 }
