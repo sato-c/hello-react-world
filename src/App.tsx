@@ -68,18 +68,19 @@ class UserList extends React.Component<UserListProps, UserListState> {
 
     render() {
         return (
-            <p>
+            <div>
             {
-                this.state.name.map((user_name: StringT) => {
+                this.state.name.map((user_name: StringT, index:number) => {
+                    const key='key_' + index.toString()
                     if ( user_name === undefined || user_name === '') {
-                        return <Welcome name='everyOne' onClick={() => this.handleClick('everyOne')} /> 
+                        return <Welcome name='everyOne' onClick={() => this.handleClick('everyOne')} key={key} /> 
                     } else {
-                        return <Welcome name={user_name} onClick={() => this.handleClick(user_name)} /> 
+                        return <Welcome name={user_name} onClick={() => this.handleClick(user_name)} key={key} /> 
                     }
                 })
             }
-            <h1>{this.state.pushed ? <div>Hello! {this.state.pushed}</div>:''}</h1>
-            </p>
+            <div className="msg">{this.state.pushed ? <div>Hello! {this.state.pushed}</div>:''}</div>
+            </div>
         )
     }
 }
