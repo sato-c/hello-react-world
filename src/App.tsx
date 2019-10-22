@@ -24,11 +24,9 @@ interface WelcomeProps {
   
     render() {
       return (
-        <p>
-        <button onClick={this.state.onClick}>
+            <button onClick={this.state.onClick} name={this.state.name}>
           {this.state.name}
           </button>
-        </p>
       );
     }
   }
@@ -76,14 +74,13 @@ class UserList extends React.Component<UserListProps, UserListState> {
             {
                 this.state.name.map((user_name) => {
                     if ( user_name === '' ) {
-                        return <Welcome name='everyOne' onClick={() => this.handleClick(user_name)} /> 
+                        return <Welcome name='everyOne' onClick={() => this.handleClick('everyOne')} /> 
                     } else {
                         return <Welcome name={user_name} onClick={() => this.handleClick(user_name)} /> 
                     }
                 })
             }
-
-            <div>{this.state.update ? <div>Hello! {this.state.pushed}</div>:''}</div>
+            <h1>{this.state.update ? <div>Hello! {this.state.pushed}</div>:''}</h1>
             </p>
         )
     }
