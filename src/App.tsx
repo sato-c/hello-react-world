@@ -71,10 +71,12 @@ class UserList extends React.Component<UserListProps, UserListState> {
             <div>
             {
                 this.state.name.map((user_name: StringT, index:number) => {
-                    const key='key_' + index.toString()
+                    let key='key_';
                     if ( user_name === undefined || user_name === '') {
+                      key += 'everyOne' + index;
                         return <Welcome name='everyOne' onClick={() => this.handleClick('everyOne')} key={key} /> 
                     } else {
+                      key += user_name + index;
                         return <Welcome name={user_name} onClick={() => this.handleClick(user_name)} key={key} /> 
                     }
                 })
