@@ -1,24 +1,23 @@
-import React, { ChangeEvent } from 'react';
+import React, { MouseEvent } from 'react';
 // import logo from './logo.svg';
 import './App.css';
 
 type StringT = string | undefined;
 type StringN = string | null;
 var users:StringT[] = ['','Cahal','Edite','Everyone']
+type InputElement = boolean | string;
+
 
 interface WelcomeProps {
     name: StringT;
-    key: StringT;
-    onClick: () => void;
-    onChange: (e:React.ChangeEvent<HTMLInputElement>, index: StringT) => void;
+    onClick: (e:React.MouseEvent<HTMLButtonElement>, user_name:StringT) => void;
   }
 
 interface WelcomeState {
   name: StringT;
-  key: StringT;
   changeName: StringN;
-  onClick: () => void;
-  onChange: (e:React.ChangeEvent<HTMLInputElement>, index: StringT) => void;
+  checked: boolean;
+  onClick: (e:React.MouseEvent<HTMLButtonElement>, user_name:StringT) => void;
 }
 
 // 変更されたかどうかを判定して、変更されていたら変更内容を知らせる
@@ -31,29 +30,39 @@ class Welcome extends React.Component<WelcomeProps, WelcomeState> {
     this.state = {
         name: props.name,
         changeName: null,
-        key: props.key,
+        checked: false,
         onClick: props.onClick,
-        onChange: props.onChange,
-      }
+    }
   }
 
-//  handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-//    alert("handleChange:" + e.target.value);
-//    this.setState({changeName: e.target.value})
-//  }
+  handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if ( e.target.name === undefined || e.target.type === undefined || e.target.type === null ) {
+      return;
+    }
+
+    const targetName: StringT = e.target.name;
+    const targetValue:InputElement  = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+
+    let partialState: {[key:string]:InputElement} = {}
+
+    partialState[targetName] = targetValue;
+
+//    this.setState(partialState);
+
+}
 
   render() {
     return (
       <div>
-        <input type="checkbox" checked={false} key={this.state.key} />
-        <input type="text" value={this.state.name} onChange={(e) => this.props.onChange(e, this.props.key)} />
-        <button onClick={this.state.onClick} >Hello!</button>
+        <input type="checkbox" name={this.state.name} checked={this.state.checked} onChange={(e) => this.setState({checked: !this.state.checked })} />
+        <input type="text" value={this.state.name} onChange={(e) => this.setState({name: e.target.value})} />
+        <button onClick={(e:React.MouseEvent<HTMLButtonElement>) => this.state.onClick(e, this.state.name)} >Hello!</button>
       </div>
     );
   }
 }
 
-interface UserListProps {
+interface UserListProps { 
     names: StringT[];
 }
 
@@ -73,7 +82,7 @@ class UserList extends React.Component<UserListProps, UserListState> {
     }
   }
 
-  handleClick(user_name: StringT) {
+  handleClick(e:React.MouseEvent<HTMLButtonElement>, user_name:StringT) {
     //e.preventDefault();
       if (this.state.pushed === user_name ) {
         this.setState({
@@ -87,46 +96,36 @@ class UserList extends React.Component<UserListProps, UserListState> {
     }
   }
 
-  handleChange(e: React.ChangeEvent<HTMLInputElement>, index:StringT) {
-  //  const changedName = e.target.value;
-    let users:StringT[] = this.state.names;
+  handleAddClick() {
+    let newmembers: StringT[] = this.state.names;
 
-    // alert(e.target.value);
-
-    //alert(index);
-
-    if ( index === undefined ) {
-      return;
-    }
-
-    const key_id:number = Number(index.split('_')[2]);
-
-    users[key_id] = e.target.value;
-    this.setState({
-      names: users,
-    })
-
-    alert(key_id + ":" + e.target.value)
+    newmembers.push("New Member" + newmembers.length)
+    this.setState({names: newmembers})
   }
 
-          // 押されたときにチェックボックスにチェックされてるリストがあれば、その内容を配列から削除する
+  handleDelClick() {
+
+  }
+
   render() {
     return (
+      <div>
+          <div className="msg">{this.state.pushed ? <div>Hello! {this.state.pushed}</div>:''}</div>
         <fieldset>
           <legend>このサイトに登録されているメンバーリスト</legend>
-          <button>チェックした人を削除</button>
+          <button onClick={()=>this.handleDelClick()}>チェックした人を削除</button>
+          <button onClick={()=>this.handleAddClick()}>新メンバー追加</button>
           {
             this.state.names.map((user_name: StringT, index:number) => {
-              const key = 'UserList_key_' + index;
                 if ( user_name === undefined || user_name === '') {
-                    return <Welcome name='everyOne' onClick={() => this.handleClick('everyOne')} key={key} onChange={(e) => this.handleChange(e, key)}/> 
+                    return <Welcome name='everyOne' onClick={(e:React.MouseEvent<HTMLButtonElement>, user_name:StringT) => this.handleClick(e,'everyOne')} /> 
                 } else {
-                    return <Welcome name={user_name} onClick={() => this.handleClick(user_name)} key={key} onChange={(e) => this.handleChange(e, key)} /> 
+                    return <Welcome name={user_name} onClick={(e:React.MouseEvent<HTMLButtonElement>, user_name:StringT) => this.handleClick(e,user_name)}  /> 
                 }
             })
           }
-          <div className="msg">{this.state.pushed ? <div>Hello! {this.state.pushed}</div>:''}</div>
         </fieldset>
+        </div>
     )
   }
 }
