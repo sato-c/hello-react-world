@@ -35,28 +35,17 @@ class Welcome extends React.Component<WelcomeProps, WelcomeState> {
     }
   }
 
-  handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    if ( e.target.name === undefined || e.target.type === undefined || e.target.type === null ) {
-      return;
-    }
-
-    const targetName: StringT = e.target.name;
-    const targetValue:InputElement  = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-
-    let partialState: {[key:string]:InputElement} = {}
-
-    partialState[targetName] = targetValue;
-
-//    this.setState(partialState);
-
-}
+  onChangeHandler(e:React.ChangeEvent<HTMLInputElement>) {
+    alert(e.target.name)
+    this.setState({checked: !this.state.checked })
+  }
 
   render() {
     return (
       <div>
-        <input type="checkbox" name={this.state.name} checked={this.state.checked} onChange={(e) => this.setState({checked: !this.state.checked })} />
+        <input type="checkbox" name={this.state.name} checked={this.state.checked} onChange={(e:React.ChangeEvent<HTMLInputElement>) => this.onChangeHandler(e)} />
         <input type="text" value={this.state.name} onChange={(e) => this.setState({name: e.target.value})} />
-        <button onClick={(e:React.MouseEvent<HTMLButtonElement>) => this.state.onClick(e, this.state.name)} >Hello!</button>
+        <button onClick={(e) => this.state.onClick(e, this.state.name)} >Hello!</button>
       </div>
     );
   }
