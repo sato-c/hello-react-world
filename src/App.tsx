@@ -77,7 +77,7 @@ class UserList extends React.Component<UserListProps, UserListState> {
   handleDeleteList(user_name: StringT, listset:boolean) {
     alert(user_name + "/" + listset)
 
-    var localDeleteList:StringT[] = this.state.deleteList != undefined ? this.state.deleteList : []
+    var localDeleteList:StringT[] = this.state.deleteList
     var i;
 
     if (!listset) {
@@ -139,12 +139,13 @@ class UserList extends React.Component<UserListProps, UserListState> {
                 if ( user_name === undefined || user_name === '') {
                     return <Welcome 
                             name='everyOne'
-                            onClick={(e:React.MouseEvent<HTMLButtonElement>, user_name:StringT) => this.handleClick(e,'everyOne')}
+                            onClick={this.handleClick}
                             setDeleteMember={this.handleDeleteList}
                             /> 
                 } else {
                     return <Welcome
-                            name={user_name} onClick={(e:React.MouseEvent<HTMLButtonElement>, user_name:StringT) => this.handleClick(e,user_name)}
+                            name={user_name}
+                            onClick={this.handleClick}
                             setDeleteMember={this.handleDeleteList}
                             /> 
                 }
