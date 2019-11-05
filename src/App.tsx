@@ -11,13 +11,13 @@ type InputElement = boolean | string;
 interface WelcomeProps {
     name: StringT;
     onClick: (e:React.MouseEvent<HTMLButtonElement>, user_name:StringT) => void;
+    setDeleteMember: (user_name:StringT, listin:boolean) => void;
   }
 
 interface WelcomeState {
   name: StringT;
   changeName: StringN;
   checked: boolean;
-  onClick: (e:React.MouseEvent<HTMLButtonElement>, user_name:StringT) => void;
 }
 
 // 変更されたかどうかを判定して、変更されていたら変更内容を知らせる
@@ -31,13 +31,14 @@ class Welcome extends React.Component<WelcomeProps, WelcomeState> {
         name: props.name,
         changeName: null,
         checked: false,
-        onClick: props.onClick,
-    }
+      }
   }
 
   onChangeHandler(e:React.ChangeEvent<HTMLInputElement>) {
-    alert(e.target.name)
-    this.setState({checked: !this.state.checked })
+    // alert(e.target.name)
+    const checked = !this.state.checked
+    this.setState({checked: checked })
+    this.props.setDeleteMember(this.state.name, checked)
   }
 
   render() {
@@ -45,7 +46,7 @@ class Welcome extends React.Component<WelcomeProps, WelcomeState> {
       <div>
         <input type="checkbox" name={this.state.name} checked={this.state.checked} onChange={(e:React.ChangeEvent<HTMLInputElement>) => this.onChangeHandler(e)} />
         <input type="text" value={this.state.name} onChange={(e) => this.setState({name: e.target.value})} />
-        <button onClick={(e) => this.state.onClick(e, this.state.name)} >Hello!</button>
+        <button onClick={(e) => this.props.onClick(e, this.state.name)} >Hello!</button>
       </div>
     );
   }
@@ -57,6 +58,7 @@ interface UserListProps {
 
 interface UserListState {
     names: StringT[];
+    deleteList: StringT[];
     pushed: StringT;
 //    update: boolean;
 }
@@ -68,6 +70,34 @@ class UserList extends React.Component<UserListProps, UserListState> {
     this.state = {
         names: this.props.names,
         pushed: undefined,
+        deleteList: [],
+    }
+  }
+
+  handleDeleteList(user_name: StringT, listset:boolean) {
+    alert(user_name + "/" + listset)
+
+    var localDeleteList:StringT[] = this.state.deleteList != undefined ? this.state.deleteList : []
+    var i;
+
+    if (!listset) {
+      for (i = 0; i < localDeleteList.length; ++i) {
+        if ( localDeleteList[i] === user_name )
+        {
+          localDeleteList.splice(i,1)
+          this.setState({deleteList: localDeleteList})
+          return;
+        }
+      }
+    } else {
+      for ( i = 0; i < localDeleteList.length; ++i ) {
+        if ( localDeleteList[i] === user_name ) {
+          return;
+        }
+      }
+
+      localDeleteList.push(user_name)
+      this.setState({deleteList: localDeleteList})
     }
   }
 
@@ -93,7 +123,7 @@ class UserList extends React.Component<UserListProps, UserListState> {
   }
 
   handleDelClick() {
-
+    alert()
   }
 
   render() {
@@ -107,9 +137,16 @@ class UserList extends React.Component<UserListProps, UserListState> {
           {
             this.state.names.map((user_name: StringT, index:number) => {
                 if ( user_name === undefined || user_name === '') {
-                    return <Welcome name='everyOne' onClick={(e:React.MouseEvent<HTMLButtonElement>, user_name:StringT) => this.handleClick(e,'everyOne')} /> 
+                    return <Welcome 
+                            name='everyOne'
+                            onClick={(e:React.MouseEvent<HTMLButtonElement>, user_name:StringT) => this.handleClick(e,'everyOne')}
+                            setDeleteMember={this.handleDeleteList}
+                            /> 
                 } else {
-                    return <Welcome name={user_name} onClick={(e:React.MouseEvent<HTMLButtonElement>, user_name:StringT) => this.handleClick(e,user_name)}  /> 
+                    return <Welcome
+                            name={user_name} onClick={(e:React.MouseEvent<HTMLButtonElement>, user_name:StringT) => this.handleClick(e,user_name)}
+                            setDeleteMember={this.handleDeleteList}
+                            /> 
                 }
             })
           }
