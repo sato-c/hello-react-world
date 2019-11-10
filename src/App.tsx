@@ -2,7 +2,7 @@ import React, { MouseEvent } from 'react';
 // import logo from './logo.svg';
 import './App.css';
 
-//var util = require('util')
+var util = require('util')
 
 type StringT = string | undefined;
 type StringN = string | null;
@@ -12,17 +12,13 @@ type InputElement = boolean | string;
 
 interface WelcomeProps {
     name: StringT;
-    onClick: (e:React.MouseEvent<HTMLButtonElement>, user_name:StringT) => void;
-    setDeleteMember: (user_name:StringT, listin:boolean, deletelist: StringT[]) => void;
-    updateDeleteMember: (old_name: StringT, new_name: StringT, deletelist: StringT[]) => void;
-    deleteList: StringT[]
-    pushed: StringT;
+    onClick: (e:React.MouseEvent<HTMLButtonElement>,user_name:StringT) => void;
+    setDeleteMember: (user_name:StringT, checked:boolean) => void;
   }
 
 interface WelcomeState {
   name: StringT;
   checked: boolean;
-  pushed: StringT;
 }
 
 // 変更されたかどうかを判定して、変更されていたら変更内容を知らせる
@@ -35,7 +31,6 @@ class Welcome extends React.Component<WelcomeProps, WelcomeState> {
     this.state = {
         name: props.name,
         checked: false,
-        pushed: undefined,
       }
   }
 
@@ -43,25 +38,26 @@ class Welcome extends React.Component<WelcomeProps, WelcomeState> {
     // alert(e.target.name)
     const checked = !this.state.checked
     this.setState({checked: checked })
-    this.props.setDeleteMember(this.state.name, checked, this.props.deleteList)
+
+    this.props.setDeleteMember(this.state.name, checked )
   }
 
   onChangeTextHandler(e:React.ChangeEvent<HTMLInputElement>) {
-    const oldName: StringT = this.state.name
-
-    this.setState({name: e.target.value})
-
-    if (this.state.checked) {
-      this.props.updateDeleteMember(oldName, this.state.name, this.props.deleteList)
+    if (!this.state.checked) {
+      this.setState({name: e.target.value})
     }
   }  
+
+  onClickHandler(e:React.MouseEvent<HTMLButtonElement>) {
+    this.props.onClick(e,this.state.name)
+  }
 
   render() {
     return (
       <div>
         <input type="checkbox" name={this.state.name} checked={this.state.checked} onChange={(e) => this.onChangeHandler(e)} />
         <input type="text" value={this.state.name} onChange={(e) => this.onChangeTextHandler(e)} />
-        <button onClick={(e) => this.props.onClick(e, this.state.name)} >Hello!</button>
+        <button onClick={(e) => this.props.onClick(e,this.state.name)}>Hello!</button>
       </div>
     );
   }
@@ -99,45 +95,38 @@ class UserList extends React.Component<UserListProps, UserListState> {
   }
 
 
-  handleDeleteList(user_name: StringT, listset:boolean, deletelist: StringT[]) {
-//    alert(user_name + "/" + listset)
+  handleDeleteList(user_name: StringT, checked: boolean) {
+//    alert(user_name)
 //     alert(util.inspect(this,false,null))
 //     alert(util.inspect(this.state,false,null))
+    var dellist = this.state.deleteList
 
-    var i;
-
-    if (!listset) {
-      for (i = 0; i < deletelist.length; ++i) {
-        if ( deletelist[i] === user_name )
-        {
-          deletelist.splice(i,1)
-          return;
-        }
-      }
+    if ( checked ) {
+      dellist.push(user_name)
     } else {
-      for ( i = 0; i < deletelist.length; ++i ) {
-        if ( deletelist[i] === user_name ) {
-          return;
-        }
-      }
+      const idx = dellist.indexOf(user_name)
 
-      deletelist.push(user_name)
+      if ( idx >= 0 ) {
+        dellist.splice(idx,1)
+      }
     }
 
-//    alert(deletelist)
+    this.setState({deleteList: dellist})
   }
 
-  handleClick(e:React.MouseEvent<HTMLButtonElement>, user_name:StringT) {
+  handleClick(e:React.MouseEvent<HTMLButtonElement>,user_name:StringT) {
     //e.preventDefault();
-      if (this.state.pushed === user_name ) {
-        this.setState({
-            pushed: undefined,
-        })
+    alert(util.inspect(this,false,null))
+    alert(util.inspect(this.state,false,null))
+
+    if (this.state.pushed === user_name ) {
+      this.setState({
+        pushed: undefined,
+      })
     } else {
-        this.setState({
-            pushed: user_name,
-//            update: true,
-        })
+      this.setState({
+        pushed: user_name,
+      })
     }
   }
 
@@ -180,21 +169,15 @@ class UserList extends React.Component<UserListProps, UserListState> {
                     return <Welcome 
                             key={user_name}
                             name='everyOne'
-                            onClick={this.handleClick}
-                            setDeleteMember={this.handleDeleteList}
-                            updateDeleteMember={this.updateDeleteMember}
-                            deleteList={this.state.deleteList}
-                            pushed={this.state.pushed}
+                            onClick={(e,t:StringT) => this.handleClick(e,t)}
+                            setDeleteMember={(t:StringT,c:boolean) => this.handleDeleteList(t,c)}
                             /> 
                 } else {
                     return <Welcome
                             key={user_name}
                             name={user_name}
-                            onClick={this.handleClick}
-                            setDeleteMember={this.handleDeleteList}
-                            updateDeleteMember={this.updateDeleteMember}
-                            deleteList={this.state.deleteList}
-                            pushed={this.state.pushed}
+                            onClick={(e,t:StringT)=>this.handleClick(e,t)}
+                            setDeleteMember={(t:StringT,c:boolean) => this.handleDeleteList(t,c)}
                             /> 
                 }
             })
