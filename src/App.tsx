@@ -2,7 +2,7 @@ import React, { MouseEvent } from 'react';
 // import logo from './logo.svg';
 import './App.css';
 
-var util = require('util')
+// var util = require('util')
 
 type StringT = string | undefined;
 type StringN = string | null;
@@ -116,8 +116,8 @@ class UserList extends React.Component<UserListProps, UserListState> {
 
   handleClick(e:React.MouseEvent<HTMLButtonElement>,user_name:StringT) {
     //e.preventDefault();
-    alert(util.inspect(this,false,null))
-    alert(util.inspect(this.state,false,null))
+    // alert(util.inspect(this,false,null))
+    // alert(util.inspect(this.state,false,null))
 
     if (this.state.pushed === user_name ) {
       this.setState({
@@ -145,6 +145,10 @@ class UserList extends React.Component<UserListProps, UserListState> {
     for ( let i = 0; i < localDL.length; ++i) {
       if( nameList.includes(localDL[i])) {
         nameList = this.state.names.filter(n => n !== localDL[i])
+
+        if ( this.state.pushed === localDL[i]) {
+          this.setState({pushed: undefined})
+        }
       }
     }
 
@@ -152,6 +156,7 @@ class UserList extends React.Component<UserListProps, UserListState> {
 
     this.setState({
       names: nameList,
+      deleteList: [],
     })
   }
 
