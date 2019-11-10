@@ -2,6 +2,8 @@ import React, { MouseEvent } from 'react';
 // import logo from './logo.svg';
 import './App.css';
 
+var util = require('util')
+
 type StringT = string | undefined;
 type StringN = string | null;
 var users:StringT[] = ['','Cahal','Edite','Everyone']
@@ -11,7 +13,8 @@ type InputElement = boolean | string;
 interface WelcomeProps {
     name: StringT;
     onClick: (e:React.MouseEvent<HTMLButtonElement>, user_name:StringT) => void;
-    setDeleteMember: (user_name:StringT, listin:boolean) => void;
+    setDeleteMember: (user_name:StringT, listin:boolean, deletelist: StringT[]) => void;
+    deleteList: StringT[]
   }
 
 interface WelcomeState {
@@ -38,7 +41,7 @@ class Welcome extends React.Component<WelcomeProps, WelcomeState> {
     // alert(e.target.name)
     const checked = !this.state.checked
     this.setState({checked: checked })
-    this.props.setDeleteMember(this.state.name, checked)
+    this.props.setDeleteMember(this.state.name, checked, this.props.deleteList)
   }
 
   render() {
@@ -74,30 +77,29 @@ class UserList extends React.Component<UserListProps, UserListState> {
     }
   }
 
-  handleDeleteList(user_name: StringT, listset:boolean) {
-    alert(user_name + "/" + listset)
+  handleDeleteList(user_name: StringT, listset:boolean, deletelist: StringT[]) {
+//    alert(user_name + "/" + listset)
+     alert(util.inspect(this,false,null))
+     alert(util.inspect(this.state,false,null))
 
-    var localDeleteList:StringT[] = this.state.deleteList
     var i;
 
     if (!listset) {
-      for (i = 0; i < localDeleteList.length; ++i) {
-        if ( localDeleteList[i] === user_name )
+      for (i = 0; i < deletelist.length; ++i) {
+        if ( deletelist[i] === user_name )
         {
-          localDeleteList.splice(i,1)
-          this.setState({deleteList: localDeleteList})
+          deletelist.splice(i,1)
           return;
         }
       }
     } else {
-      for ( i = 0; i < localDeleteList.length; ++i ) {
-        if ( localDeleteList[i] === user_name ) {
+      for ( i = 0; i < deletelist.length; ++i ) {
+        if ( deletelist[i] === user_name ) {
           return;
         }
       }
 
-      localDeleteList.push(user_name)
-      this.setState({deleteList: localDeleteList})
+      deletelist.push(user_name)
     }
   }
 
@@ -123,7 +125,7 @@ class UserList extends React.Component<UserListProps, UserListState> {
   }
 
   handleDelClick() {
-    alert()
+    alert(this.state.deleteList)
   }
 
   render() {
@@ -141,16 +143,25 @@ class UserList extends React.Component<UserListProps, UserListState> {
                             name='everyOne'
                             onClick={this.handleClick}
                             setDeleteMember={this.handleDeleteList}
+                            deleteList={this.state.deleteList}
                             /> 
                 } else {
                     return <Welcome
                             name={user_name}
                             onClick={this.handleClick}
                             setDeleteMember={this.handleDeleteList}
+                            deleteList={this.state.deleteList}
                             /> 
                 }
             })
           }
+          <div>
+          {
+            this.state.deleteList.map((user_name: StringT) => {
+              return <div>{user_name}</div>
+            })
+          }
+          </div>
         </fieldset>
         </div>
     )
@@ -160,7 +171,7 @@ class UserList extends React.Component<UserListProps, UserListState> {
 const App: React.FC = () => {
   return (
     <div className="App">
-      <UserList names={users} />
+      <UserList names={users}/>
     </div>
   );
 }
