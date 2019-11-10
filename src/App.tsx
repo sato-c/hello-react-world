@@ -14,6 +14,7 @@ interface WelcomeProps {
     name: StringT;
     onClick: (e:React.MouseEvent<HTMLButtonElement>,user_name:StringT) => void;
     setDeleteMember: (user_name:StringT, checked:boolean) => void;
+    updateDeleteMember: (old_name: StringT, new_name: StringT, deletelist: StringT[]) => void;
   }
 
 interface WelcomeState {
@@ -43,8 +44,10 @@ class Welcome extends React.Component<WelcomeProps, WelcomeState> {
   }
 
   onChangeTextHandler(e:React.ChangeEvent<HTMLInputElement>) {
-    if (!this.state.checked) {
-      this.setState({name: e.target.value})
+    this.setState({name: e.target.value})
+
+    if (this.state.checked) {
+//      this.props.updateDeleteMember(oldName, this.state.name, this.props.deleteList)
     }
   }  
 
@@ -170,6 +173,7 @@ class UserList extends React.Component<UserListProps, UserListState> {
                             key={user_name}
                             name='everyOne'
                             onClick={(e,t:StringT) => this.handleClick(e,t)}
+                            updateDeleteMember={this.updateDeleteMember}
                             setDeleteMember={(t:StringT,c:boolean) => this.handleDeleteList(t,c)}
                             /> 
                 } else {
@@ -177,6 +181,7 @@ class UserList extends React.Component<UserListProps, UserListState> {
                             key={user_name}
                             name={user_name}
                             onClick={(e,t:StringT)=>this.handleClick(e,t)}
+                            updateDeleteMember={this.updateDeleteMember}
                             setDeleteMember={(t:StringT,c:boolean) => this.handleDeleteList(t,c)}
                             /> 
                 }
