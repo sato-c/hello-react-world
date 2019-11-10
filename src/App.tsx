@@ -2,7 +2,7 @@ import React, { MouseEvent } from 'react';
 // import logo from './logo.svg';
 import './App.css';
 
-var util = require('util')
+//var util = require('util')
 
 type StringT = string | undefined;
 type StringN = string | null;
@@ -14,13 +14,15 @@ interface WelcomeProps {
     name: StringT;
     onClick: (e:React.MouseEvent<HTMLButtonElement>, user_name:StringT) => void;
     setDeleteMember: (user_name:StringT, listin:boolean, deletelist: StringT[]) => void;
+    updateDeleteMember: (old_name: StringT, new_name: StringT, deletelist: StringT[]) => void;
     deleteList: StringT[]
+    pushed: StringT;
   }
 
 interface WelcomeState {
   name: StringT;
-  changeName: StringN;
   checked: boolean;
+  pushed: StringT;
 }
 
 // 変更されたかどうかを判定して、変更されていたら変更内容を知らせる
@@ -32,8 +34,8 @@ class Welcome extends React.Component<WelcomeProps, WelcomeState> {
 
     this.state = {
         name: props.name,
-        changeName: null,
         checked: false,
+        pushed: undefined,
       }
   }
 
@@ -44,11 +46,21 @@ class Welcome extends React.Component<WelcomeProps, WelcomeState> {
     this.props.setDeleteMember(this.state.name, checked, this.props.deleteList)
   }
 
+  onChangeTextHandler(e:React.ChangeEvent<HTMLInputElement>) {
+    const oldName: StringT = this.state.name
+
+    this.setState({name: e.target.value})
+
+    if (this.state.checked) {
+      this.props.updateDeleteMember(oldName, this.state.name, this.props.deleteList)
+    }
+  }  
+
   render() {
     return (
       <div>
-        <input type="checkbox" name={this.state.name} checked={this.state.checked} onChange={(e:React.ChangeEvent<HTMLInputElement>) => this.onChangeHandler(e)} />
-        <input type="text" value={this.state.name} onChange={(e) => this.setState({name: e.target.value})} />
+        <input type="checkbox" name={this.state.name} checked={this.state.checked} onChange={(e) => this.onChangeHandler(e)} />
+        <input type="text" value={this.state.name} onChange={(e) => this.onChangeTextHandler(e)} />
         <button onClick={(e) => this.props.onClick(e, this.state.name)} >Hello!</button>
       </div>
     );
@@ -77,10 +89,20 @@ class UserList extends React.Component<UserListProps, UserListState> {
     }
   }
 
+  updateDeleteMember(old_name: StringT, new_name: StringT, deletelist: StringT[]) {
+    const idx = deletelist.indexOf(old_name)
+
+    if ( idx >= 0) {
+      deletelist.splice(idx,1)
+      deletelist.push(new_name)    
+    }
+  }
+
+
   handleDeleteList(user_name: StringT, listset:boolean, deletelist: StringT[]) {
 //    alert(user_name + "/" + listset)
-     alert(util.inspect(this,false,null))
-     alert(util.inspect(this.state,false,null))
+//     alert(util.inspect(this,false,null))
+//     alert(util.inspect(this.state,false,null))
 
     var i;
 
@@ -101,6 +123,8 @@ class UserList extends React.Component<UserListProps, UserListState> {
 
       deletelist.push(user_name)
     }
+
+//    alert(deletelist)
   }
 
   handleClick(e:React.MouseEvent<HTMLButtonElement>, user_name:StringT) {
@@ -125,7 +149,21 @@ class UserList extends React.Component<UserListProps, UserListState> {
   }
 
   handleDelClick() {
-    alert(this.state.deleteList)
+//    alert(this.state.deleteList)
+    let localDL:StringT[] = this.state.deleteList
+    let nameList:StringT[] = this.state.names
+
+    for ( let i = 0; i < localDL.length; ++i) {
+      if( nameList.includes(localDL[i])) {
+        nameList = this.state.names.filter(n => n !== localDL[i])
+      }
+    }
+
+//    alert("namelist:"+nameList)
+
+    this.setState({
+      names: nameList,
+    })
   }
 
   render() {
@@ -137,24 +175,31 @@ class UserList extends React.Component<UserListProps, UserListState> {
           <button onClick={()=>this.handleDelClick()}>チェックした人を削除</button>
           <button onClick={()=>this.handleAddClick()}>新メンバー追加</button>
           {
-            this.state.names.map((user_name: StringT, index:number) => {
+            this.state.names.map((user_name: StringT) => {
                 if ( user_name === undefined || user_name === '') {
                     return <Welcome 
+                            key={user_name}
                             name='everyOne'
                             onClick={this.handleClick}
                             setDeleteMember={this.handleDeleteList}
+                            updateDeleteMember={this.updateDeleteMember}
                             deleteList={this.state.deleteList}
+                            pushed={this.state.pushed}
                             /> 
                 } else {
                     return <Welcome
+                            key={user_name}
                             name={user_name}
                             onClick={this.handleClick}
                             setDeleteMember={this.handleDeleteList}
+                            updateDeleteMember={this.updateDeleteMember}
                             deleteList={this.state.deleteList}
+                            pushed={this.state.pushed}
                             /> 
                 }
             })
           }
+
           <div>
           {
             this.state.deleteList.map((user_name: StringT) => {
@@ -162,6 +207,7 @@ class UserList extends React.Component<UserListProps, UserListState> {
             })
           }
           </div>
+
         </fieldset>
         </div>
     )
