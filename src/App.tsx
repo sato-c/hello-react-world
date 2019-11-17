@@ -5,10 +5,7 @@ import './App.css';
 // var util = require('util')
 
 type StringT = string | undefined;
-type StringN = string | null;
 var users:StringT[] = ['','Cahal','Edite','Everyone']
-type InputElement = boolean | string;
-
 
 interface WelcomeProps {
     name: StringT;
@@ -144,7 +141,7 @@ class UserList extends React.Component<UserListProps, UserListState> {
 
     for ( let i = 0; i < localDL.length; ++i) {
       if( nameList.includes(localDL[i])) {
-        nameList = this.state.names.filter(n => n !== localDL[i])
+        nameList = nameList.filter(n => n !== localDL[i])
 
         if ( this.state.pushed === localDL[i]) {
           this.setState({pushed: undefined})
