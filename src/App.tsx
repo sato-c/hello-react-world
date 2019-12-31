@@ -7,6 +7,20 @@ import './App.css';
 type StringT = string | undefined;
 var users:StringT[] = ['','Cahal','Edite','Everyone']
 
+interface dialogProps {
+  hello: StringT;
+  color: StringT;
+}
+
+function Dialog(props: dialogProps) {
+  return (
+    <div className='msg'>
+      <h1>Hello! {props.hello}</h1>
+    </div>
+  );
+}
+ 
+
 interface WelcomeProps {
     name: StringT;
     onClick: (e:React.MouseEvent<HTMLButtonElement>,user_name:StringT) => void;
@@ -160,7 +174,6 @@ class UserList extends React.Component<UserListProps, UserListState> {
   render() {
     return (
       <div>
-          <div className="msg">{this.state.pushed ? <div>Hello! {this.state.pushed}</div>:''}</div>
         <fieldset>
           <legend>このサイトに登録されているメンバーリスト</legend>
           <button onClick={()=>this.handleDelClick()}>チェックした人を削除</button>
@@ -184,7 +197,8 @@ class UserList extends React.Component<UserListProps, UserListState> {
                 }
             })
           }
-
+        </fieldset>
+        <div>{this.state.pushed ? <Dialog hello={this.state.pushed} color='#00ccff'></Dialog>:''}</div>
           <div>
           {
             this.state.deleteList.map((user_name: StringT) => {
@@ -193,7 +207,6 @@ class UserList extends React.Component<UserListProps, UserListState> {
           }
           </div>
 
-        </fieldset>
         </div>
     )
   }
